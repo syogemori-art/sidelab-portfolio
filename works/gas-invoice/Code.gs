@@ -231,6 +231,8 @@ function createInvoiceForClient_(ss, template, group, ym, folder, issuerName) {
   const old = ss.getSheetByName(sheetName);
   if (old) ss.deleteSheet(old);
   const sheet = template.copyTo(ss).setName(sheetName);
+  // テンプレートの「メモ」（書き換え案内）はPDFに脚注として印刷されてしまうため、コピー側では消す
+  sheet.getDataRange().clearNote();
 
   try {
     const c = CONFIG.CELLS;

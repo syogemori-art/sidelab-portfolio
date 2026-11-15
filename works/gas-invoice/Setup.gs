@@ -162,7 +162,7 @@ function buildInvoiceTemplate_(sheet) {
     .setNote('適格請求書発行事業者の登録番号（T＋13桁）に書き換えてください。\n未登録の場合はこの行を空欄にしてください。');
 
   // ご請求金額（大きく表示）
-  sheet.getRange('A9').setValue('ご請求金額（税込）').setFontWeight('bold');
+  sheet.getRange('A9').setValue('ご請求金額（税込）').setFontWeight('bold').setFontSize(9).setWrap(true).setVerticalAlignment('middle');
   sheet.getRange('B9:C9').merge().setNumberFormat('"¥"#,##0').setFontSize(16).setFontWeight('bold')
     .setHorizontalAlignment('right').setBorder(null, null, true, null, null, null, '#333333', SpreadsheetApp.BorderStyle.SOLID_MEDIUM);
   sheet.setRowHeight(9, 32);

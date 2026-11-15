@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>請求書一括作成（サンプル）｜サイドラボ</title>
+<meta name="description" content="Googleスプレッドシートの売上一覧から、取引先ごとの請求書PDFをボタン1つで一括作成するGoogle Apps Scriptのサンプルです。データはすべて架空です。">
+<link rel="icon" href="../../icon.png">
+<style>
+:root{--ink:#0f172a;--sub:#475569;--line:#e2e8f0;--bg:#f8fafc;--card:#fff;--brand:#0f766e;--brand2:#14b8a6;--soft:#ecfdf5;--warn:#ea580c;--code:#0b1220}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Hiragino Sans",Meiryo,system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.8;-webkit-text-size-adjust:100%}
+a{color:var(--brand)}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px}
+.sample-bar{background:#fff7ed;color:#9a3412;font-size:13px;text-align:center;padding:6px 16px;border-bottom:1px solid #fed7aa}
+header{background:linear-gradient(140deg,var(--brand),var(--brand2));color:#fff;padding:16px 0 56px}
+.back{color:#fff;text-decoration:none;font-size:14px;opacity:.9}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:32px}
+.badge{font-size:12px;font-weight:700;border-radius:999px;padding:2px 12px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.5)}
+.badge.sample{background:#fff;color:var(--warn);border-color:#fff}
+h1{font-size:clamp(26px,5.5vw,42px);line-height:1.4;font-weight:900;margin-top:12px}
+header p{margin-top:12px;font-size:clamp(15px,2.4vw,18px);max-width:640px;opacity:.95}
+section{padding:48px 0}
+section+section{border-top:1px solid var(--line)}
+h2{font-size:clamp(21px,4vw,28px);font-weight:900;margin-bottom:6px}
+.lead{color:var(--sub);margin-bottom:24px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+.card h3{font-size:17px;margin-bottom:6px;line-height:1.5}
+.card p{color:var(--sub);font-size:15px}
+.icon{font-size:26px;line-height:1;margin-bottom:8px}
+/* ビフォー・アフター */
+.ba{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:stretch}
+.ba .card{text-align:center}
+.ba .label{display:inline-block;font-size:13px;font-weight:700;border-radius:999px;padding:2px 14px;margin-bottom:10px}
+.before .label{background:#f1f5f9;color:var(--sub)}
+.after{border:2px solid var(--brand)}
+.after .label{background:var(--brand);color:#fff}
+.big{font-size:clamp(34px,7vw,48px);font-weight:900;line-height:1.2}
+.after .big{color:var(--brand)}
+.ba ul{list-style:none;text-align:left;margin-top:12px;font-size:14px;color:var(--sub)}
+.ba li{padding-left:1.2em;position:relative}
+.ba li::before{content:"・";position:absolute;left:0}
+.ba .arrow{display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--brand);font-weight:900}
+.assume{font-size:13px;color:var(--sub);margin-top:12px}
+/* 仕組みの図 */
+.flow{display:flex;align-items:stretch;gap:8px;flex-wrap:nowrap}
+.step{flex:1;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 10px;text-align:center;font-size:14px;position:relative}
+.step b{display:block;font-size:15px;margin:4px 0 2px}
+.step small{color:var(--sub);font-size:12px;display:block;line-height:1.5}
+.step.auto{background:var(--soft);border-color:#99f6e4}
+.step.human{background:#fff7ed;border-color:#fed7aa}
+.flow .to{display:flex;align-items:center;color:var(--brand);font-weight:900}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:13px;color:var(--sub);margin-top:12px}
+.legend span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.legend .l-auto::before{background:var(--soft);border:1px solid #99f6e4}
+.legend .l-human::before{background:#fff7ed;border:1px solid #fed7aa}
+/* 請求書の見本 */
+.paper{background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:0 10px 30px rgba(15,23,42,.08);padding:28px 24px;max-width:620px;margin:0 auto;font-size:13px}
+.paper h4{text-align:center;font-size:20px;letter-spacing:.5em;margin-bottom:16px}
+.paper .top{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.paper .to{font-size:16px;font-weight:700;border-bottom:1px solid var(--ink);display:inline-block;padding-right:24px}
+.paper .meta{text-align:right;color:var(--sub);font-size:12px}
+.paper .issuer{text-align:right;font-size:12px;margin-top:8px}
+.paper .total{margin:16px 0;font-size:15px}
+.paper .total strong{font-size:22px;border-bottom:3px solid var(--ink);margin-left:12px}
+.paper table{width:100%;border-collapse:collapse;font-size:12px}
+.paper th,.paper td{border:1px solid #cbd5e1;padding:4px 6px}
+.paper th{background:#eef2f7;white-space:nowrap}
+.paper td.n{text-align:right}
+.paper .sum{width:auto;margin:8px 0 0 auto}
+.paper .ph{background:#fef9c3;padding:0 4px;border-radius:3px}
+.paper .bank{margin-top:12px;font-size:12px;border-top:1px solid #cbd5e1;padding-top:8px}
+/* コード */
+pre{background:var(--code);color:#e2e8f0;border-radius:14px;padding:18px;overflow-x:auto;font-size:13px;line-height:1.7;font-family:Consolas,"Courier New",monospace}
+pre .c{color:#94a3b8}
+pre .k{color:#5eead4}
+pre .s{color:#fcd34d}
+/* 手順 */
+ol.steps{list-style:none;counter-reset:s;display:grid;gap:10px}
+ol.steps li{counter-increment:s;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px 14px 60px;position:relative}
+ol.steps li::before{content:counter(s);position:absolute;left:16px;top:14px;width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;font-weight:900;display:grid;place-items:center}
+.files{display:flex;flex-wrap:wrap;gap:10px}
+.files a{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 16px;text-decoration:none;font-weight:700;font-size:14px}
+footer{border-top:1px solid var(--line);padding:24px 0 40px;color:var(--sub);font-size:13px}
+@media (max-width:820px){
+  .ba{grid-template-columns:1fr}
+  .ba .arrow{transform:rotate(90deg)}
+  .flow{flex-direction:column}
+  .flow .to{justify-content:center;transform:rotate(90deg);height:20px}
+  .paper{padding:20px 14px}
+}
+</style>
+</head>
+<body>
+<div class="sample-bar">※ このページはサイドラボの制作サンプルです。会社名・金額・口座などはすべて架空のデータです。</div>
+
+<header>
+  <div class="wrap">
+    <a class="back" href="../../index.html">← サイドラボ トップへ</a>
+    <div class="badges"><span class="badge sample">サンプル</span><span class="badge">Google Apps Script</span><span class="badge">スプレッドシート</span></div>
+    <h1>売上一覧から<br>請求書を一括作成</h1>
+    <p>月末にメニューを1回押すだけ。取引先ごとの請求書を作って PDF で保存し、PDF を添付したメールの下書きまで自動で用意します。</p>
+  </div>
+</header>
+
+<main>
+<section>
+  <div class="wrap">
+    <h2>こんなお悩みに</h2>
+    <p class="lead">毎月かならず発生するのに、手作業だとミスが起きやすい作業です。</p>
+    <div class="grid">
+      <div class="card"><div class="icon">📋</div><h3>1社ずつ手で転記している</h3><p>売上一覧を見ながら、請求書のひな形に日付・品目・金額を写していく作業に毎月時間がかかる。</p></div>
+      <div class="card"><div class="icon">🧮</div><h3>計算ミス・宛名ミスが怖い</h3><p>消費税の端数や合計の計算、別の取引先の明細が混ざるなど、ミスがそのまま信用問題になる。</p></div>
+      <div class="card"><div class="icon">📨</div><h3>PDF 化とメール添付が面倒</h3><p>1枚ずつ PDF で保存して、メールを書いて添付して…という作業が地味に積み重なる。</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>解決：ボタン1つで、全社分をまとめて作成</h2>
+    <p class="lead">いつもの Google スプレッドシートに「請求書」メニューを追加します。追加の費用やソフトは不要です。</p>
+    <div class="ba">
+      <div class="card before">
+        <span class="label">これまで</span>
+        <div class="big">約2時間</div>
+        <ul><li>売上一覧から1社ずつ転記</li><li>電卓で消費税を計算</li><li>PDF 保存・メール作成を10回</li></ul>
+      </div>
+      <div class="arrow" aria-hidden="true">→</div>
+      <div class="card after">
+        <span class="label">導入後</span>
+        <div class="big">約3分</div>
+        <ul><li>月を選んで OK を押すだけ</li><li>金額・消費税は自動計算</li><li>下書きを確認して送信するだけ</li></ul>
+      </div>
+    </div>
+    <p class="assume">※ 想定例：取引先10社・明細30行程度の場合。メールの確認・送信の時間は含みません。実際の効果は取引先数や運用によって変わります。</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>しくみ</h2>
+    <p class="lead">人が操作するのは最初と最後だけ。メールは<strong>自動送信せず、下書き</strong>で止めるので安心です。</p>
+    <div class="flow" role="list">
+      <div class="step human" role="listitem">①<b>月を選ぶ</b><small>メニュー「今月分の請求書を作成」</small></div>
+      <div class="to" aria-hidden="true">→</div>
+      <div class="step auto" role="listitem">②<b>取引先ごとに集計</b><small>売上一覧から対象月だけを抽出</small></div>
+      <div class="to" aria-hidden="true">→</div>
+      <div class="step auto" role="listitem">③<b>請求書を作成</b><small>テンプレートに明細・消費税10%・合計を記入</small></div>
+      <div class="to" aria-hidden="true">→</div>
+      <div class="step auto" role="listitem">④<b>PDF を保存</b><small>ドライブの月別フォルダへ</small></div>
+      <div class="to" aria-hidden="true">→</div>
+      <div class="step auto" role="listitem">⑤<b>Gmail 下書き</b><small>PDF を添付して用意</small></div>
+      <div class="to" aria-hidden="true">→</div>
+      <div class="step human" role="listitem">⑥<b>確認して送信</b><small>送信ボタンは人が押す</small></div>
+    </div>
+    <div class="legend"><span class="l-human">人の操作</span><span class="l-auto">自動</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>できあがる請求書（見本）</h2>
+    <p class="lead">A4 縦の PDF で保存されます。登録番号・振込先の欄つき（黄色の部分は導入時にご自身の情報へ書き換えます）。</p>
+    <div class="paper" aria-label="請求書の見本（架空のデータ）">
+      <h4>請求書</h4>
+      <div class="top">
+        <div><span class="to">株式会社サンプル商事　御中</span><div style="font-size:11px;color:var(--sub);margin-top:4px">〒100-0000 東京都千代田区見本町1-2-3</div></div>
+        <div class="meta">請求日 2026年11月30日<br>請求書番号 202611-001<br>お支払期限 2026年12月31日</div>
+      </div>
+      <div class="issuer"><b><span class="ph">サンプル制作室</span></b><br>登録番号：<span class="ph">T0000000000000</span></div>
+      <div class="total">ご請求金額（税込）<strong>¥36,300</strong></div>
+      <table>
+        <thead><tr><th>日付</th><th>品目</th><th>数量</th><th>単価</th><th>金額</th></tr></thead>
+        <tbody>
+          <tr><td>11/3</td><td>ホームページ保守（月額）</td><td class="n">1</td><td class="n">15,000</td><td class="n">15,000</td></tr>
+          <tr><td>11/7</td><td>お知らせページ更新</td><td class="n">3</td><td class="n">3,000</td><td class="n">9,000</td></tr>
+          <tr><td>11/18</td><td>バナー作成</td><td class="n">2</td><td class="n">4,500</td><td class="n">9,000</td></tr>
+        </tbody>
+      </table>
+      <table class="sum">
+        <tr><th>小計（税抜）</th><td class="n">33,000</td></tr>
+        <tr><th>消費税（10%）</th><td class="n">3,300</td></tr>
+        <tr><th>合計（税込）</th><td class="n"><b>36,300</b></td></tr>
+      </table>
+      <div class="bank">お振込先：<span class="ph">サンプル銀行 見本支店 普通 0000000</span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>主な機能</h2>
+    <div class="grid">
+      <div class="card"><h3>消費税10%を自動計算</h3><p>インボイス制度に沿って、請求書1枚ごとに1回だけ端数処理。切り捨て・四捨五入・切り上げを選べます。</p></div>
+      <div class="card"><h3>メールは下書きまで</h3><p>自動送信はしません。宛先・金額を目で確認してから送れます。下書き作成自体をオフにもできます。</p></div>
+      <div class="card"><h3>書き換え忘れを警告</h3><p>登録番号や振込先がサンプルのままだと、作成前にお知らせします。</p></div>
+      <div class="card"><h3>作成履歴を記録</h3><p>いつ・どの取引先に・いくらの請求書を作ったかを、シートに自動で残します。</p></div>
+      <div class="card"><h3>途中で止まらない工夫</h3><p>1社でエラーが出ても残りは続行。PDF 化が混み合ったときは自動で再試行します。</p></div>
+      <div class="card"><h3>すぐ試せる初期設定</h3><p>空のスプレッドシートで実行すると、架空のサンプルデータとテンプレートを自動で作ります。</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>コードの一部</h2>
+    <p class="lead">お客様が後から読んでも分かるように、日本語のコメントを丁寧につけています（抜粋・一部簡略化）。</p>
+<pre><code><span class="c">// --- 金額計算（消費税は請求書1枚につき1回だけ端数処理） ---</span>
+<span class="k">const</span> subtotal = items.reduce(<span class="k">function</span> (sum, it) { <span class="k">return</span> sum + it.amount; }, 0);
+<span class="k">const</span> tax = roundYen_(subtotal * CONFIG.TAX_RATE);
+<span class="k">const</span> total = subtotal + tax;
+
+<span class="c">// --- PDF を作ってドライブに保存（同名ファイルがあればゴミ箱へ移して置き換え） ---</span>
+<span class="k">const</span> pdfBlob = exportSheetAsPdf_(ss, sheet, fileName + <span class="s">'.pdf'</span>);
+trashSameNameFiles_(folder, fileName + <span class="s">'.pdf'</span>);
+<span class="k">const</span> pdfFile = folder.createFile(pdfBlob);
+
+<span class="c">// --- Gmail 下書き（送信はしません） ---</span>
+<span class="k">if</span> (CONFIG.CREATE_GMAIL_DRAFT) {
+  GmailApp.createDraft(client.email, subject, body, {
+    attachments: [pdfFile.getBlob()],
+    name: issuerName,
+  });
+}</code></pre>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>導入の流れ</h2>
+    <p class="lead">コピー＆ペーストで導入できます。くわしい手順は README にまとめています。</p>
+    <ol class="steps">
+      <li>スプレッドシートの「拡張機能 → Apps Script」にコードを貼り付けて保存</li>
+      <li>スプレッドシートを再読み込みし、メニュー「請求書 → 初期設定」を実行（初回のみ承認）</li>
+      <li>「請求書テンプレート」の発行元・登録番号・振込先を自社の情報に書き換え</li>
+      <li>月末に「請求書 → 今月分の請求書を作成」を押して、下書きを確認して送信</li>
+    </ol>
+    <h3 style="margin:28px 0 10px;font-size:17px">ファイル</h3>
+    <div class="files">
+      <a href="README.md">README（導入手順）</a>
+      <a href="Code.gs">Code.gs</a>
+      <a href="Setup.gs">Setup.gs</a>
+      <a href="appsscript.json">appsscript.json</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    このページと掲載データはサイドラボの制作サンプルです。実在の企業・人物・口座とは関係ありません。<br>
+    自社の請求書レイアウトへの対応・軽減税率・取引先ごとの締め日など、カスタマイズもご相談ください。<br>
+    <a href="../../index.html">サイドラボ トップへ戻る</a>
+  </div>
+</footer>
+</body>
+</html>

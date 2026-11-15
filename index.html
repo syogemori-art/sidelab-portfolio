@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>サイドラボ｜スプレッドシート自動化・ホームページ制作</title>
+<meta name="description" content="個人事業主・小さなお店向けに、Googleスプレッドシート／Excelの業務自動化（GAS）と、月額0円で運用できる1ページホームページを制作しています。">
+<meta property="og:title" content="サイドラボ｜スプレッドシート自動化・ホームページ制作">
+<meta property="og:description" content="面倒な手作業をボタン1つに。小さなお店のホームページも月額0円で。">
+<meta property="og:type" content="website">
+<meta property="og:image" content="ogp.png">
+<link rel="icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0f172a;--sub:#475569;--line:#e2e8f0;--bg:#f8fafc;--card:#fff;--brand:#0f766e;--brand2:#14b8a6;--accent:#ea580c}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans JP',system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.8;-webkit-text-size-adjust:100%}
+a{color:var(--brand)}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+header{background:linear-gradient(140deg,var(--brand),var(--brand2));color:#fff;padding:20px 0 72px}
+.nav{display:flex;align-items:center;gap:12px;font-weight:900;font-size:20px}
+.nav img{width:40px;height:40px;border-radius:50%;background:#fff}
+.hero h1{font-size:clamp(30px,6vw,52px);line-height:1.35;font-weight:900;margin-top:48px}
+.hero h1 em{font-style:normal;background:linear-gradient(transparent 62%,rgba(253,224,71,.85) 62%)}
+.hero p{margin-top:18px;font-size:clamp(15px,2.4vw,18px);max-width:640px;opacity:.95}
+.btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.btn{display:inline-block;background:#fff;color:var(--brand);font-weight:700;padding:12px 22px;border-radius:999px;text-decoration:none}
+.btn.ghost{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.8)}
+section{padding:64px 0}
+h2{font-size:clamp(22px,4vw,30px);font-weight:900;margin-bottom:8px}
+.lead{color:var(--sub);margin-bottom:28px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column}
+.tag{display:inline-block;font-size:12px;font-weight:700;color:#fff;background:var(--brand);border-radius:999px;padding:2px 12px;align-self:flex-start}
+.tag.hp{background:var(--accent)}
+.card h3{font-size:19px;margin:12px 0 6px;line-height:1.5}
+.card p{color:var(--sub);font-size:15px;flex:1}
+.card a.more{margin-top:16px;font-weight:700;text-decoration:none}
+.svc{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.svc .card .price{font-size:24px;font-weight:900;color:var(--ink);margin-top:8px}
+.svc .card .price small{font-size:14px;color:var(--sub);font-weight:400}
+ol.flow{list-style:none;counter-reset:s;display:grid;gap:12px}
+ol.flow li{counter-increment:s;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px 16px 64px;position:relative}
+ol.flow li::before{content:counter(s);position:absolute;left:18px;top:14px;width:32px;height:32px;border-radius:50%;background:var(--brand);color:#fff;font-weight:900;display:grid;place-items:center}
+.note{font-size:13px;color:var(--sub);margin-top:16px}
+footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--sub);font-size:13px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="nav"><img src="icon.png" alt="">サイドラボ</div>
+    <div class="hero">
+      <h1>面倒な手作業を、<br><em>ボタン1つ</em>に。</h1>
+      <p>個人事業主・小さなお店・少人数の会社向けに、Googleスプレッドシート／Excelの業務自動化と、月額0円で運用できるホームページを制作しています。やり取りはすべてテキストで完結します。</p>
+      <div class="btns">
+        <a class="btn" href="#works">制作サンプルを見る</a>
+        <a class="btn ghost" href="#services">サービスと料金</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+<section id="works">
+  <div class="wrap">
+    <h2>制作サンプル</h2>
+    <p class="lead">ご依頼時にお届けするものと同じ水準で作ったサンプルです（データ・店舗はすべて架空のものです）。</p>
+    <div class="grid">
+      <article class="card">
+        <span class="tag">GAS 自動化</span>
+        <h3>売上一覧から請求書を一括作成</h3>
+        <p>月末にスプレッドシートのメニューを1回押すだけで、取引先ごとの請求書PDFを作ってGoogleドライブに保存します。メールは下書きまで自動で作るので、誤送信の心配がありません。</p>
+        <a class="more" href="works/gas-invoice/">詳しく見る →</a>
+      </article>
+      <article class="card">
+        <span class="tag">GAS 自動化</span>
+        <h3>Googleフォームの予約を自動で管理</h3>
+        <p>予約が入ると一覧表に記録し、お客様への確認メールとカレンダー登録まで自動で行います。同じ時間帯の重複予約を見つけて知らせ、前日にはリマインドメールも送ります。</p>
+        <a class="more" href="works/gas-reservation/">詳しく見る →</a>
+      </article>
+      <article class="card">
+        <span class="tag hp">ホームページ</span>
+        <h3>まちのパン屋カフェのホームページ</h3>
+        <p>メニュー・営業時間・アクセスを1ページにまとめた、スマホで見やすいお店のサイトです。サーバー代0円の仕組みで公開しています。</p>
+        <a class="more" href="works/sample-shop/">サイトを見る →</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="services" style="background:#fff">
+  <div class="wrap">
+    <h2>サービスと料金</h2>
+    <p class="lead">内容をお聞きしてから、確定した金額をご提示します。ご相談は無料です。</p>
+    <div class="svc">
+      <div class="card"><span class="tag">自動化</span><h3>スプレッドシート業務自動化</h3><p>転記・集計・請求書作成・メール送信などをGASで自動化します。</p><div class="price">5,000円〜</div></div>
+      <div class="card"><span class="tag hp">制作</span><h3>1ページ ホームページ</h3><p>スマホ対応で、月額0円で運用できます。文章づくりもお手伝いします。</p><div class="price">19,800円〜</div></div>
+      <div class="card"><span class="tag">サポート</span><h3>Excel関数のお悩み解決</h3><p>エラーの修正や関数づくりなど、小さなお困りごとに対応します。</p><div class="price">2,000円〜</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="flow">
+  <div class="wrap">
+    <h2>ご依頼の流れ</h2>
+    <p class="lead">電話や対面のお打ち合わせはありません。すべてメッセージで進めます。</p>
+    <ol class="flow">
+      <li><b>ご相談</b><br>今の作業や、困っていることを教えてください。</li>
+      <li><b>ご提案・お見積もり</b><br>「何を作るか」を文章でまとめ、金額と納期をお伝えします。</li>
+      <li><b>制作・動作確認</b><br>完成したら、実際に動かして確認します。</li>
+      <li><b>納品・修正</b><br>使い方の説明を付けてお渡しします。修正は2回まで無料です。</li>
+    </ol>
+    <p class="note">ご依頼は、ココナラ・クラウドワークスのメッセージからお願いいたします。制作にはAIツールを活用して効率化しており、そのぶん短い納期と手ごろな価格でご提供しています。</p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">© 2026 サイドラボ</div>
+</footer>
+</body>
+</html>

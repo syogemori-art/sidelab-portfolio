@@ -199,7 +199,7 @@ function buildInvoiceTemplate_(sheet) {
   sheet.getRange(bank, 1, 2, 5).setBorder(true, null, true, null, true, null, '#c0c6cf', SpreadsheetApp.BorderStyle.SOLID);
 
   // サンプルであることの表示（印刷範囲の外＝余白に影響しない注意書きとしてメモに記載）
-  sheet.getRange('A1').setNote('このテンプレートはサイドラボのサンプルです。【要変更】の部分を自社の情報に書き換えてお使いください。');
+  sheet.getRange('A1').setNote('このテンプレートはkentaniのサンプルです。【要変更】の部分を自社の情報に書き換えてお使いください。');
 }
 
 // ------------------------------------------------------------

@@ -72,7 +72,7 @@ function setupSampleForm() {
   const f = CONFIG.FIELDS;
   const form = FormApp.create(CONFIG.SHOP_NAME + ' ご予約フォーム（サンプル）');
   form.setDescription(
-    '※これはサイドラボの動作サンプルです。店名は架空です。\n' +
+    '※これはkentaniの動作サンプルです。店名は架空です。\n' +
       'ご予約内容を確認後、自動で確認メールをお送りします。'
   );
   form.addTextItem().setTitle(f.NAME).setRequired(true);
